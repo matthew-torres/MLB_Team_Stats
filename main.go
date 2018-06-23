@@ -5,16 +5,43 @@ import (
 	"os"
 )
 
+var (
+	cubs    = make(map[string]string)
+	marlins = make(map[string]string)
+)
+
 func main() {
 	team := os.Args[1:]
-	cubs := make(map[string]string)
+
+	// Chicago Cubs
 	cubs["stadium"] = "Wrigley"
-	cubs["manager"] = "Madodon"
-	getTeamData(team)
+	cubs["manager"] = "Maddon"
+
+	// Miami Marlins
+	marlins["stadium"] = "Marlins Park"
+	marlins["manager"] = "Mattingly"
+
+	// Call getTeamData based on applicable team
+	switch team[0] {
+	case "cubs":
+		getTeamData(cubs)
+	case "marlins":
+		getTeamData(marlins)
+	}
+
 }
 
-func getTeamData(t []string) {
+func getTeamData(t map[string]string) {
 	//Loop through team
-		//Print Manager
-		//Print Stadium 
+	for k, v := range t {
+		if k == "stadium" {
+
+			//Print Stadium
+			fmt.Println("stadium: ", v)
+		} else {
+
+			//Print Manager
+			fmt.Println("manager: ", v)
+		}
+	}
 }
