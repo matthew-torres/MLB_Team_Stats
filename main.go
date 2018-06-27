@@ -21,27 +21,36 @@ func main() {
 	marlins["stadium"] = "Marlins Park"
 	marlins["manager"] = "Mattingly"
 
-	// Call getTeamData based on applicable team
-	switch team[0] {
-	case "cubs":
-		getTeamData(cubs)
-	case "marlins":
-		getTeamData(marlins)
-	}
+	printTeamStats(getTeam(team[0]))
 
 }
 
-func getTeamData(t map[string]string) {
+func getTeam(t string) map[string]string {
+
+	var foo map[string]string
+
+	// Call getTeamData based on applicable team
+	switch t {
+	case "cubs":
+		foo = cubs
+	case "marlins":
+		foo = marlins
+	}
+	return foo
+}
+
+func printTeamStats(t map[string]string) {
 	//Loop through team
 	for k, v := range t {
 		if k == "stadium" {
 
 			//Print Stadium
-			fmt.Println("stadium: ", v)
+			fmt.Println("Stadium: ", v)
 		} else {
 
 			//Print Manager
-			fmt.Println("manager: ", v)
+			fmt.Println("Manager: ", v)
 		}
+
 	}
 }
