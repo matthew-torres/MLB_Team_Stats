@@ -2,25 +2,21 @@ package main
 
 import (
 	"testing"
-	"fmt"
 )
 
-var (
-	team1    = make(map[string]string)
-	team2 = make(map[string]string)
-)
-
+// TestGetTeam test to see if the right value is retrieved
 func TestGetTeam(t *testing.T) {
 	
 	// Chicago Cubs
-	team1["stadium"] = "Wrigley"
-	team1["manager"] = "Maddon"
+	cubs["stadium"] = "Wrigley"
+	cubs["manager"] = "Maddon"
 
 	// Miami Marlins
-	team2["stadium"] = "Marlins Park"
-	team2["manager"] = "Mattingly"
+	marlins["stadium"] = "Marlins Park"
+	marlins["manager"] = "Mattingly"
 	
 	bar := getTeam("cubs")
-	fmt.Println(foo)
+	if bar["stadium"] != cubs["stadium"] {
+		t.Errorf("Expecting %s got %s", cubs["stadium"], bar["stadium"])
+	}	
 }
-
