@@ -21,10 +21,12 @@ func main() {
 	marlins["stadium"] = "Marlins Park"
 	marlins["manager"] = "Mattingly"
 
+	// printTeamStats using the getTeam function
 	printTeamStats(getTeam(team[0]))
 
 }
 
+// getTeam calls a specific team based on request
 func getTeam(t string) map[string]string {
 
 	var foo map[string]string
@@ -39,6 +41,7 @@ func getTeam(t string) map[string]string {
 	return foo
 }
 
+// printTeamStats based on specific team, function prints stats for that team 
 func printTeamStats(t map[string]string) {
 	//Loop through team
 	for k, v := range t {
