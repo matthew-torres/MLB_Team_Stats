@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"errors"
 )
 
 var (
@@ -30,12 +31,17 @@ func main() {
 	marlins["hits"] = strconv.Itoa(751)
 
 	// printTeamStats using the getTeam function
-	printTeamStats(getTeam(team[0]))
+	data,err := getTeam(team[0])
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		printTeamStats(data)
+	}
 
 }
 
 // getTeam calls a specific team based on request
-func getTeam(t string) map[string]string {
+func getTeam(t string) (map[string]string,error) {
 
 	var foo map[string]string
 
@@ -46,7 +52,11 @@ func getTeam(t string) map[string]string {
 	case "marlins":
 		foo = marlins
 	}
-	return foo
+	if len(foo) > 0 {
+		return foo,nil
+	} else {
+		return foo,errors.New("Team not found.")
+	}
 }
 
 // printTeamStats based on specific team, function prints stats for that team

@@ -15,7 +15,10 @@ func TestGetTeam(t *testing.T) {
 	marlins["stadium"] = "Marlins Park"
 	marlins["manager"] = "Mattingly"
 
-	bar := getTeam("cubs")
+	bar,err := getTeam("cubs")
+	if err != nil {
+		t.Errorf("Received invalid team: %q",err)
+	}
 	if bar["stadium"] != cubs["stadium"] {
 		t.Errorf("Expecting %s got %s", cubs["stadium"], bar["stadium"])
 	}
