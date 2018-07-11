@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -16,10 +18,16 @@ func main() {
 	// Chicago Cubs
 	cubs["stadium"] = "Wrigley"
 	cubs["manager"] = "Maddon"
+	cubs["location"] = "Chicago, Illinois"
+	cubs["team average"] = strconv.Itoa(266)
+	cubs["hits"] = strconv.Itoa(792)
 
 	// Miami Marlins
 	marlins["stadium"] = "Marlins Park"
 	marlins["manager"] = "Mattingly"
+	marlins["location"] = "Miami, Florida"
+	marlins["average"] = strconv.Itoa(242)
+	marlins["hits"] = strconv.Itoa(751)
 
 	// printTeamStats using the getTeam function
 	printTeamStats(getTeam(team[0]))
@@ -41,19 +49,10 @@ func getTeam(t string) map[string]string {
 	return foo
 }
 
-// printTeamStats based on specific team, function prints stats for that team 
+// printTeamStats based on specific team, function prints stats for that team
 func printTeamStats(t map[string]string) {
 	//Loop through team
 	for k, v := range t {
-		if k == "stadium" {
-
-			//Print Stadium
-			fmt.Println("Stadium: ", v)
-		} else {
-
-			//Print Manager
-			fmt.Println("Manager: ", v)
-		}
-
+		fmt.Println(strings.Title(k), ":", v)
 	}
 }
