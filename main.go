@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 )
@@ -30,19 +29,25 @@ var (
 )
 
 func main() {
-	var rows *sql.Rows
-	var err error
 	team := os.Args[1:]
 
 	// Connect to database
-	db, err = sql.Open("mysql", dbInfo)
+	db, err := sql.Open("mysql", dbInfo)
 	if err != nil {
 		fmt.Printf("ERR: %s - %q", "Cannot connect to database", err)
 	}
+	fmt.Println(team)
 	defer db.Close()
 
+}
+
+// getTeam calls a specific team based on request
+func getTeam(t string) (teams []Team,err error) {
+
+	var rows *sql.Rows
+
 	// Get all assets
-	rows, err = db.Query("SELECT * FROM teams WHERE name = (?)",team[0])
+	rows, err = db.Query("SELECT * FROM teams WHERE name = (?)",t)
 
 	// Check to make sure there were no errors in querying the data
 	if err != nil {
@@ -61,41 +66,12 @@ func main() {
 
 		// Check for error during scan
 		if err != nil {
-
 			// Could not scan query results into assets, retun empty van and error
 			fmt.Printf("ERROR: %q",err)
-
 		}
-	fmt.Println(t)
+		teams = append(teams, t)
 	}
-
-
-
-
-
-
-
-
-
-}
-
-// getTeam calls a specific team based on request
-func getTeam(t string) (map[string]string,error) {
-
-	var foo map[string]string
-
-	// Call getTeamData based on applicable team
-	switch t {
-	case "cubs":
-		foo = cubs
-	case "marlins":
-		foo = marlins
-	}
-	if len(foo) > 0 {
-		return foo,nil
-	} else {
-		return foo,errors.New("Team not found.")
-	}
+	return teams,nil
 }
 
 // printTeamStats based on specific team, function prints stats for that team
