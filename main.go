@@ -35,7 +35,13 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		printTeamStats(data)
+		// Check for second paramater
+		if (len(team) == 2) { // ==2 so we have a second paramater
+			printTeamStats(data,team[1])
+		} else {
+			printTeamStats(data,"")
+		}
+
 	}
 
 }
@@ -60,9 +66,20 @@ func getTeam(t string) (map[string]string,error) {
 }
 
 // printTeamStats based on specific team, function prints stats for that team
-func printTeamStats(t map[string]string) {
-	//Loop through team
-	for k, v := range t {
-		fmt.Println(strings.Title(k), ":", v)
+func printTeamStats(t map[string]string,a string) {
+
+	// Check if a specific attribute was requested
+	if a == "" {
+		//Loop through team
+		for k, v := range t {
+			fmt.Println(strings.Title(k), ":", v)
+		}
+	} else {
+		// Check if the requested attribute exists
+		if t[a] == "" {
+			fmt.Println("Invalid attribute requested")
+		} else {
+			fmt.Println(t[a])
+		}
 	}
 }
