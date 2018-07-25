@@ -1,7 +1,11 @@
 package main
 
 import (
+	"net/http"
+	"github.com/gorilla/mux"
 	"fmt"
+	"encoding/json"
+	"log"
 	"flag"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
@@ -53,6 +57,12 @@ func main() {
 	} else {
 		printTeamStats(teams,"")
 	}
+
+	// Start the mux router
+	r := Router()
+
+	// Launch the server
+	log.Fatal(http.ListenAndServe(":80", r))
 
 	defer db.Close()
 
@@ -132,4 +142,38 @@ func printTeamStats(teams []Team,a string) {
 
 		}
 	}
+}
+
+// Router is used to start the api router, and define the endpoint which API
+// consumers can route to.
+func Router() *mux.Router {
+
+	// Start the router
+	r := mux.NewRouter()
+
+	// Assets defined in logs.go
+	r.HandleFunc("/api/v1/team", AddTeam).Methods("PUT")
+	//r.HandleFunc("/api/v1/teams", GetTeams).Methods("GET")
+	//r.HandleFunc("/api/v1/team", GetTeam).Methods("GET")
+
+	return r
+}
+
+func AddTeam(w http.ResponseWriter, r *http.Request) {
+
+	// The team payload
+	p := json.NewDecoder(r.Body)
+
+	var team Team
+
+	// Decode the payload in to 'team' [Team]
+	err := p.Decode(&team)
+	if err != nil {
+		log.Println("ERROR: Decoding payload - %q",err)
+	} else {
+
+		// Insert data into DB
+
+	}
+
 }
