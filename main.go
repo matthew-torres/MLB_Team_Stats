@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"strings"
+	"flag"
 	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 )
@@ -29,14 +28,32 @@ var (
 )
 
 func main() {
-	team := os.Args[1:]
+
+	var err error
+
+	// Flags
+	team := flag.String("team","", "A string that is used to specify a team that is used to pull data from")
+	attribute := flag.String("attribute","", "A string that is used to print out a specific stat from the team")
+	flag.Parse()
 
 	// Connect to database
-	db, err := sql.Open("mysql", dbInfo)
+	db, err = sql.Open("mysql", dbInfo)
 	if err != nil {
 		fmt.Printf("ERR: %s - %q", "Cannot connect to database", err)
 	}
-	fmt.Println(team)
+
+	// Get the team(s) data
+	teams,err := getTeam(*team)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if *attribute != "" {
+		printTeamStats(teams,*attribute)
+	} else {
+		printTeamStats(teams,"")
+	}
+
 	defer db.Close()
 
 }
@@ -75,20 +92,44 @@ func getTeam(t string) (teams []Team,err error) {
 }
 
 // printTeamStats based on specific team, function prints stats for that team
-func printTeamStats(t map[string]string,a string) {
+//func printTeamStats(t map[string]string,a string) {
+func printTeamStats(teams []Team,a string) {
 
 	// Check if a specific attribute was requested
 	if a == "" {
-		//Loop through team
-		for k, v := range t {
-			fmt.Println(strings.Title(k), ":", v)
+		// Print all attributes
+		for _,team := range teams {
+
+			fmt.Println(team.ID)
+			fmt.Println(team.Name)
+			fmt.Println(team.Manager)
+			fmt.Println(team.Stadium)
+			fmt.Println(team.City)
+			fmt.Println(team.State)
 		}
+
 	} else {
-		// Check if the requested attribute exists
-		if t[a] == "" {
-			fmt.Println("Invalid attribute requested")
-		} else {
-			fmt.Println(t[a])
+
+		//Loop through team and print specific attribute
+		for _,team := range teams {
+			switch a {
+			case "id":
+				fmt.Println(team.ID)
+			case "name":
+				fmt.Println(team.Name)
+			case "manager":
+				fmt.Println(team.Manager)
+			case "stadium":
+				fmt.Println(team.Stadium)
+			case "city":
+				fmt.Println(team.City)
+			case "state":
+				fmt.Println(team.State)
+			default:
+				fmt.Println("Attribute not found")
+			}
+
+
 		}
 	}
 }
