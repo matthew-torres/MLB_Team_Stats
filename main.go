@@ -173,7 +173,10 @@ func AddTeam(w http.ResponseWriter, r *http.Request) {
 	} else {
 
 		// Insert data into DB
-
+		_, err := db.Exec("INSERT INTO teams (name,manager,stadium,city,state) values (?,?,?,?,?)", team.Name,team.Manager,team.Stadium,team.City,team.State)
+		if err != nil {
+			log.Println("ERROR: Could not insert data into database - %q",err)
+		}
 	}
 
 }
