@@ -22,13 +22,11 @@ type Team struct {
 }
 
 var (
-	cubs          = make(map[string]string)
-	marlins       = make(map[string]string)
 	db            *sql.DB
 	mysqlHost     string = "localhost"
-	mysqlDatabase string = "mlb_team_stats"
+	mysqlDatabase string = "mlb_teams_stats"
 	mysqlUser     string = "root"
-	mysqlPassword string = "pa11word"
+	mysqlPassword string = "someRandomPassword"
 	dbInfo        string = mysqlUser + ":" + mysqlPassword + "@tcp(" + mysqlHost + ":3306)/" + mysqlDatabase + "?charset=utf8"
 )
 
@@ -63,7 +61,7 @@ func main() {
 	r := Router()
 
 	// Launch the server
-	log.Fatal(http.ListenAndServe(":80", r))
+	log.Fatal(http.ListenAndServe(":8080", r))
 
 	defer db.Close()
 
@@ -165,6 +163,7 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	team := vars["team"]
 
+
 	// Now that we have the name from the API request, query the database for the requested team
 
 	t, err := getTeamCli(team)
@@ -177,6 +176,8 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 
 			// Team exists, format response
 			io.WriteString(w, t[0].Name)
+
+			// @TODO - proper JSON responsei - START HERE
 
 		} else {
 
