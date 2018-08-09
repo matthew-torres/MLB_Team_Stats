@@ -13,7 +13,7 @@ import (
 
 type Player struct {
 	ID        int    `json:"id" sql:"id"`
-	Team_id   string `json:"team_id" sql:"team_id"`
+	Team_id   int    `json:"team_id" sql:"team_id"`
 	Firstname string `json:"firstname" sql:"firstname"`
 	Lastname  string `json:"lastname" sql:"lastname"`
 	Position  string `json:"position" sql:"position"`
@@ -21,9 +21,6 @@ type Player struct {
 }
 
 func AddPlayer(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("oof")
-	log.Println(r.Body)
 
 	// The player payload
 	p := json.NewDecoder(r.Body)
@@ -93,20 +90,20 @@ func GetPlayer(w http.ResponseWriter, r *http.Request) {
 
 	// Get the player name from the request
 	vars := mux.Vars(r)
-	player := vars["team"]
+	player := vars["player"]
 
 	// Now that we have the name from the API request, query the database for the requested player
 
-	t, err := getPlayerCli(player)
+	p, err := getPlayerCli(player)
 	if err != nil {
 		log.Println("ERROR: Cannot find requested player - %q", err)
 	} else {
 
 		// Check if player exists
-		if len(t) > 0 {
+		if len(p) > 0 {
 
 			// Player exists, format response
-			io.WriteString(w, t[0].Lastname)
+			io.WriteString(w, p[0].Lastname)
 
 			// @TODO - proper JSON responsei - START HERE
 
@@ -126,7 +123,7 @@ func getPlayerCli(p string) (players []Player, err error) {
 	var rows *sql.Rows
 
 	// Get all assets
-	rows, err = db.Query("SELECT * FROM players WHERE name = (?)", p)
+	rows, err = db.Query("SELECT * FROM players WHERE lastname = (?)", p)
 
 	// Check to make sure there were no errors in querying the data
 	if err != nil {
