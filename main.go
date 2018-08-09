@@ -77,10 +77,13 @@ func Router() *mux.Router {
 	// Start the router
 	r := mux.NewRouter()
 
-	// Assets defined in logs.go
+	// Team endpoints
 	r.HandleFunc("/api/v1/team", AddTeam).Methods("PUT")
-	//r.HandleFunc("/api/v1/teams", GetTeams).Methods("GET")
 	r.HandleFunc("/api/v1/team/{team}", GetTeam).Methods("GET")
+
+	// Player endpoints
+	r.HandleFunc("/api/v1/player", AddPlayer).Methods("PUT")
+	r.HandleFunc("/api/v1/player/{player}", GetPlayer).Methods("GET")
 
 	return r
 }
