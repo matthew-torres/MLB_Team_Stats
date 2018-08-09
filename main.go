@@ -21,6 +21,13 @@ type Team struct {
 	State   string `json:"state" sql:"state"`
 }
 
+// Struct used to structure the API response.
+type Response struct {
+	Success bool
+	Message string
+	Data    json.RawMessage
+}
+
 var (
 	db            *sql.DB
 	mysqlHost     string = "localhost"
@@ -28,6 +35,12 @@ var (
 	mysqlUser     string = "root"
 	mysqlPassword string = "someRandomPassword"
 	dbInfo        string = mysqlUser + ":" + mysqlPassword + "@tcp(" + mysqlHost + ":3306)/" + mysqlDatabase + "?charset=utf8"
+	// Random API response vars
+	data         json.RawMessage
+	foobar       string = `{"Success": false,"Message": "Internal server error :(","Data": {"foo": "bar"}}`
+	success      bool   = false
+	responseCode int    = 500
+	message      string
 )
 
 func main() {
@@ -163,7 +176,6 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	team := vars["team"]
 
-
 	// Now that we have the name from the API request, query the database for the requested team
 
 	t, err := getTeamCli(team)
@@ -199,7 +211,10 @@ func AddTeam(w http.ResponseWriter, r *http.Request) {
 	// Decode the payload in to 'team' [Team]
 	err := p.Decode(&team)
 	if err != nil {
-		log.Println("ERROR: Decoding payload - %q", err)
+		success = false
+		responseCode = 500
+		message = "Internal Error :("
+		log.Printf("ERR: Could not decode payload - %q", err)
 	} else {
 
 		// Query DB to check for existing team
@@ -211,12 +226,43 @@ func AddTeam(w http.ResponseWriter, r *http.Request) {
 			// Insert data into DB
 			_, err := db.Exec("INSERT INTO teams (name,manager,stadium,city,state) values (?,?,?,?,?)", team.Name, team.Manager, team.Stadium, team.City, team.State)
 			if err != nil {
-				log.Println("ERROR: Could not insert data into database - %q", err)
+				success = false
+				responseCode = 500
+				message = "Internal Error :("
+				log.Printf("ERR: Could not decode payload - %q", err)
 			} else {
-				io.WriteString(w, `{"success":true}`)
+
+				// All Good
+				success = true
+				responseCode = 202 // Accepted
+				message = "Request accepted, Team added."
 			}
 		}
 
+	}
+
+	// By this point we should have some sort of response
+	resp := &Response{Success: success, Message: message, Data: data}
+
+	// SET content type to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Marshal the response
+	response, err := json.Marshal(resp)
+
+	// Check to see if there was an error whilst marshalling the response
+	if err != nil {
+
+		// FML
+		log.Printf("ERR: Could not marshal response - %q", err)
+		w.WriteHeader(500)
+		fmt.Fprint(w, foobar)
+
+	} else {
+
+		// Respond
+		w.WriteHeader(responseCode)
+		fmt.Fprint(w, string(response))
 	}
 
 }
